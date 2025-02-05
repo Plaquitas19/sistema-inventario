@@ -4,23 +4,21 @@ import bodyParser from "body-parser";
 import authRoutes from "./routes/authRoutes";
 import verifyToken from "./middlewares/verifyToken";
 
-
 const app = express();
 
-// Configurar CORS
+// ✅ Configurar CORS para permitir tanto localhost como Vercel
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173", "https://sistema-inventario-theta.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
 
 app.use(bodyParser.json());
 
 // ✅ Cargar todas las rutas
 app.use("/api", authRoutes);
 
-
+// ✅ Ruta protegida con autenticación
 app.get("/api/dashboard", verifyToken, (req: Request, res: Response): void => {
   if (!req.user) {
     res.status(401).json({ message: "Usuario no autenticado" });
@@ -29,7 +27,7 @@ app.get("/api/dashboard", verifyToken, (req: Request, res: Response): void => {
   res.status(200).json({ message: `Bienvenido ${req.user.username} al Dashboard` });
 });
 
-// Iniciar el servidor
+// ✅ Iniciar el servidor
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
